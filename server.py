@@ -10,6 +10,7 @@ from langchain.agents import AgentType
 from utils import template
 from customs import CustomOutputParser, CustomPromptTemplate
 
+# sample api call
 def get_products(*args) -> str:
     result = requests.get("https://fakestoreapi.com/products")
     return result.content
@@ -17,6 +18,7 @@ def get_products(*args) -> str:
 app = Flask(__name__)
 CORS(app)
 
+# chatbot has to remember past messages
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 tools = [
@@ -28,6 +30,7 @@ tools = [
     )
 ]
 
+# prompt template
 prompt = CustomPromptTemplate(
     template=template,
     tools=tools,
@@ -36,11 +39,13 @@ prompt = CustomPromptTemplate(
 
 output_parser = CustomOutputParser()
 
+# the model
 llm = ChatOpenAI(
     openai_api_key=os.environ['OPENAI_API_KEY'], 
     temperature=0, 
 )
 
+# combined agent that can recognize when to call the api and when to respond generically
 agent_chain = initialize_agent(tools, llm, agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION, verbose=True, memory=memory)
 
 @app.route('/')

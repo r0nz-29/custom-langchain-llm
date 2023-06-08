@@ -2,4 +2,3 @@ langchain
 flask
 openai
 flask_cors
-waitress
